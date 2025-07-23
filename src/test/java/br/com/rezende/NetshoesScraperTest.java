@@ -1,94 +1,47 @@
 package br.com.rezende;
 
 import br.com.rezende.model.Produto;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import br.com.rezende.service.ScraperService;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NetshoesScraperTest {
 
-    static WebDriver driver;
-    static WebDriverWait wait;
+    @Test
+    public void testExtrairProdutoComSucesso() {
+        ScraperService scraperService = new ScraperService();
 
-    @BeforeAll
-    public static void setup() {
-        WebDriverManager.chromedriver().setup();
+        // Use uma URL válida e estável da Netshoes
+        String url = "https://www.netshoes.com.br/p/tenis-asics-novablast-5-tr-masculino-2FW-2898-912";
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--start-maximized");
-        options.addArguments("--disable-blink-features=AutomationControlled");
-        options.addArguments("--disable-extensions");
+        Produto produto = scraperService.extrairProduto(url);
 
-        // options.addArguments("--headless=new");
+        assertNotNull(produto, "O produto não pode ser nulo.");
+        assertNotEquals("Não encontrado", produto.getTitulo(), "Título não foi encontrado.");
+        assertNotEquals("Não encontrado", produto.getPreco(), "Preço não foi encontrado.");
+        assertNotEquals("Não encontrado", produto.getImagem(), "Imagem não foi encontrada.");
+        assertNotEquals("Não encontrado", produto.getDescricao(), "Descrição não foi encontrada.");
 
-        driver = new ChromeDriver(options);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-    }
-
-    @AfterAll
-    public static void teardown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        System.out.println("✅ Produto extraído com sucesso:");
+        System.out.println(produto);
     }
 
     @Test
-    public void deveExtrairInformacoesDoProduto() throws InterruptedException {
-        String url = "https://www.netshoes.com.br/p/tenis-nike-revolution-7-masculino-JD8-6364-014";
-        driver.get(url);
+    public void testExtrairProdutoComUrlInvalida() {
+        ScraperService scraperService = new ScraperService();
 
-        // Aguarda carregamento total
-        wait.until(ExpectedConditions.jsReturnsValue("return document.readyState === 'complete'"));
+        String urlInvalida = "https://www.netshoes.com.br/produto-inexistente";
 
-        Thread.sleep(5000); // aguarda renderização de conteúdo dinâmico
+        Produto produto = scraperService.extrairProduto(urlInvalida);
 
-        // Aceita cookies se necessário
-        try {
-            WebElement accept = wait.until(ExpectedConditions.elementToBeClickable(By.id("cookie-notice-ok")));
-            accept.click();
-        } catch (Exception ignored) {
-        }
+        assertNotNull(produto, "Mesmo com URL inválida, o produto deve ser retornado (com campos 'Não encontrado').");
+        assertEquals("Não encontrado", produto.getTitulo(), "Título deveria estar como 'Não encontrado'.");
+        assertEquals("Não encontrado", produto.getPreco(), "Preço deveria estar como 'Não encontrado'.");
+        assertEquals("Não encontrado", produto.getImagem(), "Imagem deveria estar como 'Não encontrado'.");
+        assertEquals("Não encontrado", produto.getDescricao(), "Descrição deveria estar como 'Não encontrado'.");
 
-        // Título com XPath genérico
-        String titulo = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.xpath("//h1[contains(text(), 'Tênis')]"))).getText();
-
-        // Preço com fallback: qualquer texto contendo "R$"
-        String preco = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.xpath("//*[contains(text(),'R$')]"))).getText();
-
-        // Imagem principal
-        String imagem = wait.until(ExpectedConditions.presenceOfElementLocated(
-                By.cssSelector("img[itemprop='image']"))).getAttribute("src");
-
-        // Descrição se disponível
-        String descricao;
-        try {
-            descricao = driver.findElement(By.cssSelector("div[itemprop='description']")).getText();
-        } catch (NoSuchElementException e) {
-            descricao = "Descrição não encontrada.";
-        }
-
-        Produto produto = new Produto(titulo, preco, imagem, descricao);
-
-        // Validações
-        assertNotNull(produto);
-        assertTrue(titulo.toLowerCase().contains("tênis"));
-        assertTrue(preco.contains("R$"));
-        assertTrue(imagem.startsWith("http"));
-        assertFalse(produto.toString().isEmpty());
-
-        // Exibe no console
+        System.out.println("⚠️ Produto com dados não encontrados (como esperado para URL inválida):");
         System.out.println(produto);
     }
 }

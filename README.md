@@ -12,7 +12,7 @@ Ele foi criado como parte de um case de estágio em desenvolvimento back-end.
 
 ## Tecnologias Utilizadas
 
-* Java 11
+* Java 21
 * Maven
 * Selenium
 * WebDriverManager
@@ -48,6 +48,18 @@ Ele foi criado como parte de um case de estágio em desenvolvimento back-end.
     java -cp target/netshoes-scraper-1.0-SNAPSHOT.jar br.com.rezende.NetshoesScraper "[https://www.netshoes.com.br/p/tenis-nike-revolution-7-masculino-JD8-6364-014](https://www.netshoes.com.br/p/tenis-nike-revolution-7-masculino-JD8-6364-014)"
     ```
     O resultado com as informações do produto será exibido no console.
+
+
+## Salvando o Resultado em um Arquivo
+
+Para cumprir o requisito do case de salvar os resultados obtidos, você pode redirecionar a saída do programa para um arquivo de texto. Isso cria um registro da extração.
+
+Execute o comando da seguinte forma:
+
+```bash
+java -cp target/netshoes-scraper-1.0-SNAPSHOT.jar br.com.rezende.NetshoesScraper "URL_DO_PRODUTO_AQUI" > resultado_produto.txt
+```
+
 
 ## Como Executar os Testes
 
