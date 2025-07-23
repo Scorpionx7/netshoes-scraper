@@ -1,5 +1,5 @@
-```markdown
-# 🕷️ Web Scraper Netshoes - Case Técnico
+
+### 🕷️ Web Scraper Netshoes - Case Técnico
 
 [![Java](https://img.shields.io/badge/Java-21-blue.svg)](https://openjdk.org/projects/jdk/21/)
 [![Selenium](https://img.shields.io/badge/Selenium-4.21.0-brightgreen.svg)](https://www.selenium.dev/)
@@ -31,6 +31,7 @@ Este projeto realiza **web scraping no site da Netshoes** para extração de inf
    cd netshoes-scraper
    ```
 
+##
 3. **Instalação**:
    ```bash
    mvn clean install
